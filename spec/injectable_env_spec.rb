@@ -13,20 +13,20 @@ RSpec.describe InjectableEnv do
       expect(InjectableEnv.create).to eq('{}')
     end
 
-    describe 'for REACT_APP_ vars' do
+    describe 'for JS_RUNTIME_ vars' do
       before do
-        ENV['REACT_APP_HELLO'] = 'Hello World'
-        ENV['REACT_APP_EMOJI'] = '🍒🍊🍍'
-        ENV['REACT_APP_EMBEDDED_QUOTES'] = '"e=MC(2)"'
-        ENV['REACT_APP_SLASH_CONTENT'] = '\\'
-        ENV['REACT_APP_NEWLINE'] = "I am\na poet."
+        ENV['JS_RUNTIME_HELLO'] = 'Hello World'
+        ENV['JS_RUNTIME_EMOJI'] = '🍒🍊🍍'
+        ENV['JS_RUNTIME_EMBEDDED_QUOTES'] = '"e=MC(2)"'
+        ENV['JS_RUNTIME_SLASH_CONTENT'] = '\\'
+        ENV['JS_RUNTIME_NEWLINE'] = "I am\na poet."
       end
       after do
-        ENV.delete 'REACT_APP_HELLO'
-        ENV.delete 'REACT_APP_EMOJI'
-        ENV.delete 'REACT_APP_EMBEDDED_QUOTES'
-        ENV.delete 'REACT_APP_SLASH_CONTENT'
-        ENV.delete 'REACT_APP_NEWLINE'
+        ENV.delete 'JS_RUNTIME_HELLO'
+        ENV.delete 'JS_RUNTIME_EMOJI'
+        ENV.delete 'JS_RUNTIME_EMBEDDED_QUOTES'
+        ENV.delete 'JS_RUNTIME_SLASH_CONTENT'
+        ENV.delete 'JS_RUNTIME_NEWLINE'
       end
 
       it "returns entries" do
@@ -34,11 +34,11 @@ RSpec.describe InjectableEnv do
         # puts result
         # puts unescape(result)
         object = JSON.parse(unescape(result))
-        expect(object['REACT_APP_HELLO']).to eq('Hello World')
-        expect(object['REACT_APP_EMOJI']).to eq('🍒🍊🍍')
-        expect(object['REACT_APP_EMBEDDED_QUOTES']).to eq('"e=MC(2)"')
-        expect(object['REACT_APP_SLASH_CONTENT']).to eq('\\')
-        expect(object['REACT_APP_NEWLINE']).to eq("I am\na poet.")
+        expect(object['JS_RUNTIME_HELLO']).to eq('Hello World')
+        expect(object['JS_RUNTIME_EMOJI']).to eq('🍒🍊🍍')
+        expect(object['JS_RUNTIME_EMBEDDED_QUOTES']).to eq('"e=MC(2)"')
+        expect(object['JS_RUNTIME_SLASH_CONTENT']).to eq('\\')
+        expect(object['JS_RUNTIME_NEWLINE']).to eq("I am\na poet.")
       end
     end
 
@@ -66,10 +66,10 @@ RSpec.describe InjectableEnv do
 
   describe '.replace' do
     before do
-      ENV['REACT_APP_HELLO'] = "Hello\n\"World\" we \\ prices today 🌞"
+      ENV['JS_RUNTIME_HELLO'] = "Hello\n\"World\" we \\ prices today 🌞"
     end
     after do
-      ENV.delete 'REACT_APP_HELLO'
+      ENV.delete 'JS_RUNTIME_HELLO'
     end
 
     it "writes into file" do
@@ -80,7 +80,7 @@ RSpec.describe InjectableEnv do
 
         InjectableEnv.replace(file.path)
 
-        expected_value='var injected="{\\"REACT_APP_HELLO\\":\\"Hello\\\\n\\\\\"World\\\\\" we \\\\\\\\ prices today 🌞\\"}'
+        expected_value='var injected="{\\"JS_RUNTIME_HELLO\\":\\"Hello\\\\n\\\\\"World\\\\\" we \\\\\\\\ prices today 🌞\\"}'
         actual_value=file.read
         expect(actual_value.index(expected_value)).to eq(0)
         # Closing double-quote is padded out but still last char.
@@ -102,7 +102,7 @@ RSpec.describe InjectableEnv do
 
         InjectableEnv.replace(file.path)
 
-        expected_value='var injected="{\\"REACT_APP_HELLO\\":\\"Hello\\\\n\\\\\"World\\\\\" we \\\\\\\\ prices today 🌞\\"}'
+        expected_value='var injected="{\\"JS_RUNTIME_HELLO\\":\\"Hello\\\\n\\\\\"World\\\\\" we \\\\\\\\ prices today 🌞\\"}'
         actual_value=file.read
         expect(actual_value.index(expected_value)).to eq(0)
         # Closing double-quote is padded out but still last char.
@@ -125,7 +125,7 @@ RSpec.describe InjectableEnv do
 
         InjectableEnv.replace(file.path)
 
-        expected_value = '{\\"REACT_APP_HELLO\\":\\"Hello\\\\n\\\\\"World\\\\\" we \\\\\\\\ prices today 🌞\\"}'
+        expected_value = '{\\"JS_RUNTIME_HELLO\\":\\"Hello\\\\n\\\\\"World\\\\\" we \\\\\\\\ prices today 🌞\\"}'
         actual_value = file.read
         replaced_size = actual_value.size
         expect(replaced_size).to eq(placeholder_size)
