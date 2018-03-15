@@ -1,7 +1,5 @@
 #!/bin/bash
 
-# Fail immediately on non-zero exit code.
-set -e
 # Debug, echo every command
 #set -x
 
