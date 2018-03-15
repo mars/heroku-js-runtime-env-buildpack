@@ -19,107 +19,6 @@ A Heroku app uses this buildpack + an [npm module](https://github.com/mars/herok
 * vue-cli with webpack ([example](#user-content-with-vue)): `JS_RUNTIME_TARGET_BUNDLE=/app/dist/static/js/vendor.*.js`
 
 `JS_RUNTIME_`-prefixed environment variables will be made available in the running Heroku app via npm module [heroku-js-runtime-env](https://github.com/mars/heroku-js-runtime-env).
-
-### with Ember
-
-⚠️ Not yet working with Ember.
-
-✏️ *Replace `$APP_NAME` with your app's unique name.*
-
-```bash
-npm install -g ember-cli
-ember new $APP_NAME
-cd $APP_NAME
-heroku create $APP_NAME
-heroku buildpacks:add https://github.com/mars/heroku-js-runtime-env-buildpack
-heroku config:set JS_RUNTIME_TARGET_BUNDLE=/app/dist/assets/vendor-*.js
-heroku buildpacks:add heroku/nodejs
-heroku buildpacks:add https://github.com/heroku/heroku-buildpack-static
-
-# Serve it with static site buildpack
-echo '{ "root": "dist/" }' > static.json
-git add static.json
-git commit -m 'Serve it with static site buildpack'
-```
-
-Add Heroku build hook to `package.json`. Merge the following `"heroku-postbuild"` property into the existing `"scripts"` section:
-
-```json
-{
-  "scripts": {
-    "heroku-postbuild": "ember build --environment=production"
-  }
-}
-```
-
-Then, commit this change:
-
-```
-git add package.json
-git commit -m 'Add Heroku build hook to `package.json`'
-```
-
-
-
-```bash
-npm install --save-dev ember-browserify
-npm install --save @mars/heroku-js-runtime-env
-ember generate component runtime-env
-```
-
-
-Edit the component `app/components/runtime-env.js` to contain:
-
-```
-import Component from '@ember/component';
-import { computed } from '@ember/object';
-import runtimeEnv from 'npm:@mars/heroku-js-runtime-env';
-
-export default Component.extend({
-  message: computed(function() {
-    const env = runtimeEnv();
-    return env.RUNTIME_JS_MESSAGE || 'RUNTIME_JS_MESSAGE is empty. Here’s a donut instead: 🍩';
-  })
-});
-```
-
-Edit the component template `app/templates/components/runtime-env.hbs` to contain:
-
-```
-<h2>{{message}}</h2>
-{{yield}}
-```
-
-Edit the application template `app/templates/components/runtime-env.hbs` to contain:
-
-```
-{{runtime-env}}
-
-{{!-- The following component displays Ember's default welcome message. --}}
-{{welcome-page}}
-{{!-- Feel free to remove this! --}}
-
-{{outlet}}
-```
-
-Then, commit and deploy the app:
-
-```bash
-git add .
-git commit -m 'Implement runtimeEnv() in a component'
-git push heroku master
-
-heroku open
-```
-
-Once deployed, you can set the `RUNTIME_JS_MESSAGE` var to see the new value take effect immediately after the app restarts:
-
-```bash
-heroku config:set JS_RUNTIME_MESSAGE=🌈
-heroku open
-```
-
-
 ### with Vue
 
 [Example Vue app](https://github.com/mars/example-vue-with-heroku-js-runtime-env), created in this experiment.
@@ -199,6 +98,114 @@ Once deployed, you can set the `JS_RUNTIME_MESSAGE` var to see the new value tak
 heroku config:set JS_RUNTIME_MESSAGE=🌈
 heroku open
 ```
+
+
+
+### with Ember
+
+⚠️ **Not working with Ember.** The bundle file integrity check fails, because this technique changes the bundle:
+
+> Failed to find a valid digest in the 'integrity' attribute for resource 'https://example-ember-runtime-env.herokuapp.com/assets/vendor-05f75ec213143035d715ab3c640a3ff4.js' with computed SHA-256 integrity 'oSQ3RCkKyfwVgWjG0HDlTzDFreoQnTQCUCqJoiOJEMs='. The resource has been blocked.
+
+✏️ *Replace `$APP_NAME` with your app's unique name.*
+
+```bash
+npm install -g ember-cli
+ember new $APP_NAME
+cd $APP_NAME
+heroku create $APP_NAME
+heroku buildpacks:add https://github.com/mars/heroku-js-runtime-env-buildpack
+heroku config:set JS_RUNTIME_TARGET_BUNDLE=/app/dist/assets/vendor-*.js
+heroku buildpacks:add heroku/nodejs
+heroku buildpacks:add https://github.com/heroku/heroku-buildpack-static
+
+# Serve it with static site buildpack
+echo '{ "root": "dist/" }' > static.json
+git add static.json
+git commit -m 'Serve it with static site buildpack'
+```
+
+Add Heroku build hook to `package.json`. Merge the following `"heroku-postbuild"` property into the existing `"scripts"` section:
+
+```json
+{
+  "scripts": {
+    "heroku-postbuild": "ember build --environment=production"
+  }
+}
+```
+
+Then, commit this change:
+
+```
+git add package.json
+git commit -m 'Add Heroku build hook to `package.json`'
+```
+
+Create a component that uses JS Runtime Env:
+
+```bash
+npm install --save-dev ember-browserify
+npm install --save @mars/heroku-js-runtime-env
+ember generate component runtime-env
+```
+
+
+Edit the component `app/components/runtime-env.js` to contain:
+
+```
+import Component from '@ember/component';
+import { computed } from '@ember/object';
+import runtimeEnv from 'npm:@mars/heroku-js-runtime-env';
+
+export default Component.extend({
+  message: computed(function() {
+    const env = runtimeEnv();
+    return env.RUNTIME_JS_MESSAGE || 'RUNTIME_JS_MESSAGE is empty. Here’s a donut instead: 🍩';
+  })
+});
+```
+
+Edit the component template `app/templates/components/runtime-env.hbs` to contain:
+
+```
+<h2>{{message}}</h2>
+{{yield}}
+```
+
+Edit the application template `app/templates/components/runtime-env.hbs` to contain:
+
+```
+{{runtime-env}}
+
+{{!-- The following component displays Ember's default welcome message. --}}
+{{welcome-page}}
+{{!-- Feel free to remove this! --}}
+
+{{outlet}}
+```
+
+Then, commit and deploy the app:
+
+```bash
+git add .
+git commit -m 'Implement runtimeEnv() in a component'
+git push heroku master
+
+heroku open
+```
+
+Once deployed, you would ideally set the `RUNTIME_JS_MESSAGE` var to see the new value take effect immediately after the app restarts:
+
+```bash
+heroku config:set JS_RUNTIME_MESSAGE=🌈
+heroku open
+```
+
+⚠️ **Not working with Ember.** The bundle file integrity check fails, because this technique changes the bundle:
+
+> Failed to find a valid digest in the 'integrity' attribute for resource 'https://example-ember-runtime-env.herokuapp.com/assets/vendor-05f75ec213143035d715ab3c640a3ff4.js' with computed SHA-256 integrity 'oSQ3RCkKyfwVgWjG0HDlTzDFreoQnTQCUCqJoiOJEMs='. The resource has been blocked.
+
 
 Background
 -----------
