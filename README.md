@@ -12,7 +12,12 @@ Usage
 
 A Heroku app uses this buildpack + an [npm module](https://github.com/mars/heroku-js-runtime-env). 
 
-`RUNTIME_JS_`-prefixed environment variables will be made available in the running Heroku app via npm module [heroku-js-runtime-env](https://github.com/mars/heroku-js-runtime-env).
+`JS_RUNTIME_TARGET_BUNDLE` must be set to the path glob pattern for the javascript bundle containing the [heroku-js-runtime-env](https://github.com/mars/heroku-js-runtime-env). For example:
+
+* create-react-app: `JS_RUNTIME_TARGET_BUNDLE=/app/build/index.*.js`
+* vue-cli with webpack: `JS_RUNTIME_TARGET_BUNDLE=/app/dist/static/js/vendor.*.js`
+
+`JS_RUNTIME_`-prefixed environment variables will be made available in the running Heroku app via npm module [heroku-js-runtime-env](https://github.com/mars/heroku-js-runtime-env).
 
 ### with Vue
 
@@ -67,7 +72,7 @@ export default {
   data () {
     const env = runtimeEnv()
     return {
-      msg: env.RUNTIME_JS_MESSAGE || 'RUNTIME_JS_MESSAGE is empty. Here’s a donut instead: 🍩'
+      msg: env.JS_RUNTIME_MESSAGE || 'JS_RUNTIME_MESSAGE is empty. Here’s a donut instead: 🍩'
     }
   }
 }
@@ -84,7 +89,7 @@ git push heroku master
 heroku open
 ```
 
-Once deployed, you can set the `RUNTIME_JS_MESSAGE` var to see the new value take effect immediately after the app restarts:
+Once deployed, you can set the `JS_RUNTIME_MESSAGE` var to see the new value take effect immediately after the app restarts:
 
 ```bash
 heroku config:set JS_RUNTIME_MESSAGE=🌈
