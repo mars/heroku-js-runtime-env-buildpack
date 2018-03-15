@@ -15,11 +15,14 @@ A Heroku app uses this buildpack + an [npm module](https://github.com/mars/herok
 `JS_RUNTIME_TARGET_BUNDLE` must be set to the path glob pattern for the javascript bundle containing the [heroku-js-runtime-env](https://github.com/mars/heroku-js-runtime-env). For example:
 
 * create-react-app: `JS_RUNTIME_TARGET_BUNDLE=/app/build/index.*.js`
-* vue-cli with webpack: `JS_RUNTIME_TARGET_BUNDLE=/app/dist/static/js/vendor.*.js`
+* ember-cli ([example](#user-content-with-ember)): `JS_RUNTIME_TARGET_BUNDLE=/app/dist/assets/vendor.js`
+* vue-cli with webpack ([example](#user-content-with-vue)): `JS_RUNTIME_TARGET_BUNDLE=/app/dist/static/js/vendor.*.js`
 
 `JS_RUNTIME_`-prefixed environment variables will be made available in the running Heroku app via npm module [heroku-js-runtime-env](https://github.com/mars/heroku-js-runtime-env).
 
 ### with Ember
+
+⚠️ Not yet working with Ember.
 
 ✏️ *Replace `$APP_NAME` with your app's unique name.*
 
@@ -27,12 +30,9 @@ A Heroku app uses this buildpack + an [npm module](https://github.com/mars/herok
 npm install -g ember-cli
 ember new $APP_NAME
 cd $APP_NAME
-git init
-git add .
-git commit -m '🌱 create Ember app'
 heroku create $APP_NAME
 heroku buildpacks:add https://github.com/mars/heroku-js-runtime-env-buildpack
-heroku config:set JS_RUNTIME_TARGET_BUNDLE=/app/dist/static/js/vendor.*.js
+heroku config:set JS_RUNTIME_TARGET_BUNDLE=/app/dist/assets/vendor-*.js
 heroku buildpacks:add heroku/nodejs
 heroku buildpacks:add https://github.com/heroku/heroku-buildpack-static
 
@@ -47,7 +47,7 @@ Add Heroku build hook to `package.json`. Merge the following `"heroku-postbuild"
 ```json
 {
   "scripts": {
-    "heroku-postbuild": "npm run build"
+    "heroku-postbuild": "ember build --environment=production"
   }
 }
 ```
@@ -59,28 +59,53 @@ git add package.json
 git commit -m 'Add Heroku build hook to `package.json`'
 ```
 
-In the Vue component `src/components/HelloWorld.vue`:
 
-```
-<script>
-import runtimeEnv from '@mars/heroku-js-runtime-env'
-
-export default {
-  name: 'HelloWorld',
-  data () {
-    const env = runtimeEnv()
-    return {
-      msg: env.RUNTIME_JS_MESSAGE || 'RUNTIME_JS_MESSAGE is empty. Here’s a donut instead: 🍩'
-    }
-  }
-}
-</script>
-```
-
-Then, commit this code & deploy the app:
 
 ```bash
-git add src/components/HelloWorld.vue
+npm install --save-dev ember-browserify
+npm install --save @mars/heroku-js-runtime-env
+ember generate component runtime-env
+```
+
+
+Edit the component `app/components/runtime-env.js` to contain:
+
+```
+import Component from '@ember/component';
+import { computed } from '@ember/object';
+import runtimeEnv from 'npm:@mars/heroku-js-runtime-env';
+
+export default Component.extend({
+  message: computed(function() {
+    const env = runtimeEnv();
+    return env.RUNTIME_JS_MESSAGE || 'RUNTIME_JS_MESSAGE is empty. Here’s a donut instead: 🍩';
+  })
+});
+```
+
+Edit the component template `app/templates/components/runtime-env.hbs` to contain:
+
+```
+<h2>{{message}}</h2>
+{{yield}}
+```
+
+Edit the application template `app/templates/components/runtime-env.hbs` to contain:
+
+```
+{{runtime-env}}
+
+{{!-- The following component displays Ember's default welcome message. --}}
+{{welcome-page}}
+{{!-- Feel free to remove this! --}}
+
+{{outlet}}
+```
+
+Then, commit and deploy the app:
+
+```bash
+git add .
 git commit -m 'Implement runtimeEnv() in a component'
 git push heroku master
 
@@ -157,10 +182,11 @@ export default {
 </script>
 ```
 
-Then, commit this code & deploy the app:
+Then, install the npm module, commit, and deploy the app:
 
 ```bash
-git add src/components/HelloWorld.vue
+npm install @mars/heroku-js-runtime-env --save
+git add .
 git commit -m 'Implement runtimeEnv() in a component'
 git push heroku master
 
