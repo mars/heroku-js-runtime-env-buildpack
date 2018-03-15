@@ -15,7 +15,6 @@ CACHE_DIR=$2
 ENV_DIR=$3
 BP_DIR=`cd $(dirname $0); cd ..; pwd`
 
-echo '-----> Enabling runtime environment variables'
 cd $BUILD_DIR
 
 # The following destination files are explicit dependencies in
@@ -23,14 +22,14 @@ cd $BUILD_DIR
 #
 # Keep any path or name changes in-sync.
 
+echo "       installing /app/.heroku-js-runtime-env/injectable_env.rb"
 lib_dir="$BUILD_DIR/.heroku-js-runtime-env"
 mkdir -p "$lib_dir"
 cp "$BP_DIR/lib/injectable_env.rb" "$lib_dir/"
-echo "       installed /app/.heroku-js-runtime-env/injectable_env.rb"
 
+echo "       installing /app/.profile.d/zzzzz_inject_js_runtime_env.sh"
 profile_d_dir="$BUILD_DIR/.profile.d"
 mkdir -p "$profile_d_dir"
 # Prepend "zzzzz_" to force sort so it's the last profile script to run.
 # This helps to it to see env changes made by other profile scripts.
 cp "$BP_DIR/.profile.d/inject_js_runtime_env.sh" "$profile_d_dir/zzzzz_inject_js_runtime_env.sh"
-echo "       installed /app/.profile.d/zzzzz_inject_js_runtime_env.sh"

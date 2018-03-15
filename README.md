@@ -10,9 +10,13 @@ Usage
 
 🚧 **Work in progress** 🚧
 
-A Heroku app uses this buildpack + an [npm module](https://github.com/mars/heroku-js-runtime-env).
+A Heroku app uses this buildpack + an [npm module](https://github.com/mars/heroku-js-runtime-env). 
+
+`RUNTIME_JS_`-prefixed environment variables will be made available in the running Heroku app via npm module [heroku-js-runtime-env](https://github.com/mars/heroku-js-runtime-env).
 
 ### with Vue
+
+⚠️ Vue's `npm run dev` mode does pass arbitrary env vars instead requiring settings in `config/dev.env.js`. So, dev mode seems to be broken. (Help?)
 
 ✏️ *Replace `$APP_NAME` with your app's unique name.*
 
@@ -25,6 +29,7 @@ git add .
 git commit -m '🌱 create Vue app'
 heroku create $APP_NAME
 heroku buildpacks:add https://github.com/mars/heroku-js-runtime-env-buildpack
+heroku config:set JS_RUNTIME_TARGET_BUNDLE=/app/dist/static/js/vendor.*.js
 heroku buildpacks:add heroku/nodejs
 heroku buildpacks:add https://github.com/heroku/heroku-buildpack-static
 
@@ -32,13 +37,21 @@ heroku buildpacks:add https://github.com/heroku/heroku-buildpack-static
 echo '{ "root": "dist/" }' > static.json
 git add static.json
 git commit -m 'Serve it with static site buildpack'
+```
 
-# Add Heroku build hook to `package.json`
+Add Heroku build hook to `package.json`. Merge the following `"heroku-postbuild"` property into the existing `"scripts"` section:
+
+```json
 {
   "scripts": {
     "heroku-postbuild": "npm run build"
   }
 }
+```
+
+Then, commit this change:
+
+```
 git add package.json
 git commit -m 'Add Heroku build hook to `package.json`'
 ```
@@ -59,6 +72,23 @@ export default {
   }
 }
 </script>
+```
+
+Then, commit this code & deploy the app:
+
+```bash
+git add src/components/HelloWorld.vue
+git commit -m 'Implement runtimeEnv() in a component'
+git push heroku master
+
+heroku open
+```
+
+Once deployed, you can set the `RUNTIME_JS_MESSAGE` var to see the new value take effect immediately after the app restarts:
+
+```bash
+heroku config:set JS_RUNTIME_MESSAGE=🌈
+heroku open
 ```
 
 Background
