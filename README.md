@@ -21,7 +21,7 @@ A Heroku app uses this buildpack + an [npm module](https://github.com/mars/herok
 
 ### with Vue
 
-⚠️ Vue's `npm run dev` mode does pass arbitrary env vars instead requiring settings in `config/dev.env.js`. So, dev mode seems to be broken. (Help?)
+⚠️ Vue's `npm run dev` mode does not pass arbitrary env vars instead requiring settings in `config/dev.env.js`. So, dev mode seems to be broken. (Help?)
 
 ✏️ *Replace `$APP_NAME` with your app's unique name.*
 
