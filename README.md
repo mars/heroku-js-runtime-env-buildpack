@@ -19,6 +19,8 @@ A Heroku app uses this buildpack + an [npm module](https://github.com/mars/herok
 * vue-cli with webpack ([example](#user-content-with-vue)): `JS_RUNTIME_TARGET_BUNDLE=/app/dist/static/js/vendor.*.js`
 
 `JS_RUNTIME_`-prefixed environment variables will be made available in the running Heroku app via npm module [heroku-js-runtime-env](https://github.com/mars/heroku-js-runtime-env).
+
+
 ### with Vue
 
 [Example Vue app](https://github.com/mars/example-vue-with-heroku-js-runtime-env), created in this experiment.
@@ -99,13 +101,13 @@ heroku config:set JS_RUNTIME_MESSAGE=🌈
 heroku open
 ```
 
-
-
 ### with Ember
 
 ⚠️ **Not working with Ember.** The bundle file integrity check fails, because this technique changes the bundle:
 
 > Failed to find a valid digest in the 'integrity' attribute for resource 'https://example-ember-runtime-env.herokuapp.com/assets/vendor-05f75ec213143035d715ab3c640a3ff4.js' with computed SHA-256 integrity 'oSQ3RCkKyfwVgWjG0HDlTzDFreoQnTQCUCqJoiOJEMs='. The resource has been blocked.
+
+[Example Ember app](https://github.com/mars/example-ember-with-heroku-js-runtime-env), created in this experiment.
 
 ✏️ *Replace `$APP_NAME` with your app's unique name.*
 
