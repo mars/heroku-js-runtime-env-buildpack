@@ -108,7 +108,7 @@ How Does It Work?
 -----------------
 When developing a JavaScript app, use the [npm module](https://www.npmjs.com/package/@mars/heroku-js-runtime-env) to access runtime environment variables in client-side code.
 
-Then, each time the app starts-up on Heroku, a [`.profile.d` script](https://github.com/mars/heroku-js-runtime-env/blob/master/.profile.d/inject_js_runtime_env.sh) (installed from the buildpack) is executed which fills in a [JSON placeholder](https://github.com/mars/heroku-js-runtime-env/blob/master/index.js#L15) in the JavaScript bundle with the runtime environment variables. The result is 🍃fresh runtime environment variables in the production javascript bundle without recompiling.
+Then, each time the app starts-up on Heroku, a [`.profile.d` script](.profile.d/inject_js_runtime_env.sh) (installed from the buildpack) is executed which fills in a [JSON placeholder](https://github.com/mars/heroku-js-runtime-env/blob/master/index.js#L15) (with a `REACT_APP_` legacy name) in the JavaScript bundle with the runtime environment variables. The result is 🍃fresh runtime environment variables in the production javascript bundle without recompiling.
 
 
 Development
