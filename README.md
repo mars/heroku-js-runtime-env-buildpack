@@ -5,17 +5,17 @@ Use runtime environment variables in bundled/minified javascript apps.
 [![Build Status](https://travis-ci.org/mars/heroku-js-runtime-env-buildpack.svg?branch=master)](https://travis-ci.org/mars/heroku-js-runtime-env-buildpack)
 [![npm Module](https://img.shields.io/npm/v/@mars/heroku-js-runtime-env.svg)](https://www.npmjs.com/package/@mars/heroku-js-runtime-env)
 
+🔬🚧 **This is a reasearch project.** Results so far indicate that it's not generalizing to different JS frameworks as gracefully as one might hope.
+
 Usage
 -----
-
-🚧 **Work in progress** 🚧
 
 A Heroku app uses this buildpack + an [npm module](https://github.com/mars/heroku-js-runtime-env). 
 
 `JS_RUNTIME_TARGET_BUNDLE` must be set to the path glob pattern for the javascript bundle containing the [heroku-js-runtime-env](https://github.com/mars/heroku-js-runtime-env). For example:
 
 * create-react-app: `JS_RUNTIME_TARGET_BUNDLE=/app/build/index.*.js`
-* ember-cli ([example](#user-content-with-ember)): `JS_RUNTIME_TARGET_BUNDLE=/app/dist/assets/vendor.js`
+* ember-cli ([example](#user-content-with-ember)): `JS_RUNTIME_TARGET_BUNDLE=/app/dist/assets/vendor-*.js`
 * vue-cli with webpack ([example](#user-content-with-vue)): `JS_RUNTIME_TARGET_BUNDLE=/app/dist/static/js/vendor.*.js`
 
 `JS_RUNTIME_`-prefixed environment variables will be made available in the running Heroku app via npm module [heroku-js-runtime-env](https://github.com/mars/heroku-js-runtime-env).
